@@ -47,7 +47,7 @@ INSERT INTO drugs VALUES
 ('vitamin x', 'supplement'),
 ('oxycotton', 'painkiller');
 
-INSERT INTO dosages VALUES
+INSERT INTO dosage VALUES
 ('niacin', 'kid', 10),
 ('niacin', 'adult', 20),
 ('niacin', 'elder', 15),
