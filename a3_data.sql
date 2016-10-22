@@ -1,10 +1,10 @@
 INSERT INTO staff VALUES
-('11', 'D', 'Doc A', 'adoc', 'coda'),
-('12', 'D', 'Doc B', 'bdoc', 'codb'),
-('21', 'N', 'Nurse A', 'anur', 'runa'),
-('22', 'N', 'Nurse B', 'bnur', 'runb'),
-('31', 'A', 'Admin A', 'aadm', 'mdaa'),
-('32', 'A', 'Admin B', 'badm', 'mdab');
+('11', 'D', 'Doc A', '9b590109635183644227f5f2bffac2f5e864c49863c1df1a839cd2b3', '62a764eb5e88b83bce26baf3d09159c5d5a69e51afed3dc9adb8838b'),
+('12', 'D', 'Doc B', '28b41edf3b0dd7a48604f73ecb5fe2a456c58395faf0d1fae774b92b', '6024a299a4467214e4d29724f3a50d75deb967d7105141158cb1a8e0'),
+('21', 'N', 'Nurse A', 'd8b1a785f215fd87747f37b1be12da2e841ce1ecb9a40b0e8db71dd1', '0f03f04c16c1651710f29feda3d02413867675cd0745ba4c6c16b299'),
+('22', 'N', 'Nurse B', 'dc04aeaf8728f57fb389ac3d2f814a8d78d101cb39b4b15b617955f6', '941607c42e98281008a92ef771d26d97db7533e81c2c98516086724d'),
+('31', 'A', 'Admin A', '9fa38f2c81f142f881c5a9d0d8c462fbb3d2b2c93123bf4438baf3d2', '2bdf983dc86f4159188b03f40698b0624bb76070df3ba727ad26e7ac'),
+('32', 'A', 'Admin B', '9b590109635183644227f5f2bffac2f5e864c49863c1df1a839cd2b3', '62a764eb5e88b83bce26baf3d09159c5d5a69e51afed3dc9adb8838b');
 
 INSERT INTO patients VALUES
 ('1', 'Ed A', 'kid', '123 Edmonton', '1234567890', '0987654321'),
