@@ -3,21 +3,21 @@ import hashlib
 import re
 
 
-#A funtion to handle the Doctor roles in the database
+#a funtion to handle the Doctor roles in the database
 def doctorUser():
     i = 2
     print i 
     return 0
 
 
-#A function to handle the Nurse roles in the database
+#a function to handle the Nurse roles in the database
 def nurseUser():
     i = 1
     print i
     return 0
 
 
-#A function to handle the Admin roles in the database
+#a function to handle the Admin roles in the database
 def adminUser():
     i = 0
     print i
