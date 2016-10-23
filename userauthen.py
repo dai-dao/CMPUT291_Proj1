@@ -3,25 +3,24 @@ import hashlib
 import re
 
 
+
 #a funtion to handle the Doctor roles in the database
 def doctorUser():
+    import doctor 
     i = 2
-    print i 
-    return 0
+    return i
 
 
 #a function to handle the Nurse roles in the database
 def nurseUser():
     i = 1
-    print i
-    return 0
+    return i
 
 
 #a function to handle the Admin roles in the database
 def adminUser():
     i = 0
-    print i
-    return 0
+    return i
 
 
 
@@ -34,9 +33,10 @@ c = conn.cursor()
 c.execute(' PRAGMA forteign_keys=ON; ')
 
 #printing of the welcome screen for the database user 
-print "Welcome to the Hospital database.\n".upper()
-print "Please enter your username and password below to start\n"
-print "or type 'exit' in both fields to exit"
+print "============================================================\n"
+print "************* Welcome to the Hospital database *************\n".upper()
+print "Please enter your username and password below to start"
+print "or type 'exit' in both fields to exit.\n"
 
 #CURRENT USERNAMES & PASSWORDS:
 # Doctor: adoc, coda
@@ -61,6 +61,10 @@ while True:
 #hashing of the entered user inputs so that they may be compared against the database
     username = hashlib.sha224(username_input).hexdigest()
     password = hashlib.sha224(password_input).hexdigest()
+    print username
+    print password
+    
+    
     
 #Breaks the loop to exit the database
     if username == '95d0df0e937ba7c068e398dee3ce00904558864a701013b1d9682d5d' and password =='95d0df0e937ba7c068e398dee3ce00904558864a701013b1d9682d5d':
