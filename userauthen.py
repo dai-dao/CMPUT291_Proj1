@@ -1,7 +1,9 @@
 import sqlite3
 import hashlib
 import re
-import doctor 
+import doctor
+import nurse
+import admin
 from db_utility import *
 
 
@@ -13,13 +15,15 @@ def doctorUser(staff_id, conn, c):
 
 
 #a function to handle the Nurse roles in the database
-def nurseUser():
+def nurseUser(staff_id, conn, c):
+    nurse.init(staff_id, conn, c)
     i = 1
     return i
 
 
 #a function to handle the Admin roles in the database
-def adminUser():
+def adminUser(conn, c):
+    admin.init(conn, c)
     i = 0
     return i
 
@@ -86,7 +90,7 @@ while True:
         if user_exists:
             if user_exists[0] == 'A':
                 print '\nHello Administrator'
-                adminUser()
+                adminUser(conn, c)
                 break
             if user_exists[0] == 'D':
                 print '\nHello Doctor'
@@ -95,12 +99,11 @@ while True:
             if user_exists[0] == 'N':
                 print '\nHello Nurse'
                 print user_exists[0]
-                nurseUser()
+                nurseUser(user_exists[1], conn, c)
                 break
         else:
             print "\nYour username or password is not correct, try again.\n"
     
   
-
-
+c.close()
 conn.close()
