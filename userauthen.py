@@ -1,12 +1,13 @@
 import sqlite3
 import hashlib
 import re
-
+import doctor 
+from db_utility import *
 
 
 #a funtion to handle the Doctor roles in the database
-def doctorUser():
-    import doctor 
+def doctorUser(staff_id, conn, c):
+    doctor.init(staff_id, conn, c)
     i = 2
     return i
 
@@ -25,12 +26,16 @@ def adminUser():
 
 
 #initialization of the database 
+
 hospital_database = 'hospital.db.sqlite'
 
 conn = sqlite3.connect('.\hospital.db')
 
 c = conn.cursor()
 c.execute(' PRAGMA forteign_keys=ON; ')
+executeScript('table.sql', c)
+executeScript('a3_data.sql', c)
+
 
 #printing of the welcome screen for the database user 
 print "============================================================\n"
@@ -75,7 +80,7 @@ while True:
 #against SQL injection
     
     if re.match("^[A-Za-z0-9_]*$", username) and re.match("^[A-Za-z0-9_]*$", password):
-        c.execute("SELECT role FROM staff WHERE login=? AND password=?;", (username, password))
+        c.execute("SELECT role, staff_id FROM staff WHERE login=? AND password=?;", (username, password))
         
         user_exists = c.fetchone()
         if user_exists:
@@ -85,7 +90,7 @@ while True:
                 break
             if user_exists[0] == 'D':
                 print '\nHello Doctor'
-                doctorUser() 
+                doctorUser(user_exists[1], conn, c) 
                 break
             if user_exists[0] == 'N':
                 print '\nHello Nurse'
