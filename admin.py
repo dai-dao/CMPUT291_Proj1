@@ -5,7 +5,8 @@ def init(conn, c):
     action = int(raw_input("Action 1: Create report\n"
                        "Action 2: Total amount prescribed for each drug\n"
                        "Action 3: List all medications for diagnosis\n"
-                       "Action 4: List all diagnoses for drug:"))
+                       "Action 4: List all diagnoses for drug\n"
+                       "Enter action: "))
 
     if action == 1:
         sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
