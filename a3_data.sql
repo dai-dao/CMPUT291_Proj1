@@ -14,6 +14,7 @@ INSERT INTO patients VALUES
 ('5', 'Ed E', 'elder', '808 Montreal', '5678901234', '4321098765'),
 ('6', 'Ed F', 'elder', '666 Phoenix', '1313131313', '6666666666');
 
+
 INSERT INTO charts VALUES
 ('11', '1', '2010-01-02', '2011-03-04'),
 ('12', '1', '2016-01-27', NULL),

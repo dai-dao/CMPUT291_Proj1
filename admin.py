@@ -15,65 +15,54 @@ def init(conn, c):
                 "FROM medications " + \
                 "GROUP BY staff_id, drug_name"
 
-        try:
-            result = c.execute(query)
-            print_result(result, 'Report')
-        except OperationalError as msg:
-            print msg
-            return -1
-        return 1
+        result = c.execute(query)
+        print_result(result.fetchall(), result, 'Report')
 
     def act2():
         print "Get Total amount prescribed for each drug"
         sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
         edate = raw_input("Enter End Date (YYYY-MM-DD HH:MM:SS): ")
-        try:
-            query = "select first_sub.category, second_sub.drug_name, second_sub.total_category, first_sub.type_total " + \
-                "from " + \
-                "    (select dr.category, sum(sub.Total) as type_total " + \
-                "    from drugs dr " + \
-                "    inner join " + \
-                "        (SELECT drug_name, sum(amount) * " + \
-                "           round(julianday(min(end_med ,'%s')) - julianday(max(start_med, '%s'))) " % (edate, sdate) + \
-                "        AS Total " + \
-                "        FROM medications " + \
-                "        GROUP BY drug_name) " + \
-                "    sub " + \
-                "    on " + \
-                "    dr.drug_name = sub.drug_name " + \
-                "    group by dr.category) " + \
-                "first_sub " + \
-                "inner join " + \
-                "    (select " + \
-                "    dr.category, dr.drug_name, sub.Total as total_category " + \
-                "    from " + \
-                "    drugs dr " + \
-                "    inner join " + \
-                "    (SELECT " + \
-                "    drug_name, sum(amount) * " \
-                "                round(julianday(min(end_med ,'%s')) - julianday(max(start_med, '%s'))) " % (edate, sdate) + \
-                "        AS Total " + \
-                "    FROM " + \
-                "    medications " + \
-                "    GROUP BY " + \
-                "    drug_name) sub " + \
-                "    on " + \
-                "    dr.drug_name = sub.drug_name " + \
-                "    order by " + \
-                "    dr.category) " + \
-                "second_sub " + \
-                "on " + \
-                "first_sub.category = second_sub.category " + \
-                "where total_category > 0 and type_total > 0 " + \
-                "order by first_sub.category "
+        query = "select first_sub.category, second_sub.drug_name, second_sub.total_category, first_sub.type_total " + \
+            "from " + \
+            "    (select dr.category, sum(sub.Total) as type_total " + \
+            "    from drugs dr " + \
+            "    inner join " + \
+            "        (SELECT drug_name, sum(amount) * " + \
+            "           round(julianday(min(end_med ,'%s')) - julianday(max(start_med, '%s'))) " % (edate, sdate) + \
+            "        AS Total " + \
+            "        FROM medications " + \
+            "        GROUP BY drug_name) " + \
+            "    sub " + \
+            "    on " + \
+            "    dr.drug_name = sub.drug_name " + \
+            "    group by dr.category) " + \
+            "first_sub " + \
+            "inner join " + \
+            "    (select " + \
+            "    dr.category, dr.drug_name, sub.Total as total_category " + \
+            "    from " + \
+            "    drugs dr " + \
+            "    inner join " + \
+            "    (SELECT " + \
+            "    drug_name, sum(amount) * " \
+            "                round(julianday(min(end_med ,'%s')) - julianday(max(start_med, '%s'))) " % (edate, sdate) + \
+            "        AS Total " + \
+            "    FROM " + \
+            "    medications " + \
+            "    GROUP BY " + \
+            "    drug_name) sub " + \
+            "    on " + \
+            "    dr.drug_name = sub.drug_name " + \
+            "    order by " + \
+            "    dr.category) " + \
+            "second_sub " + \
+            "on " + \
+            "first_sub.category = second_sub.category " + \
+            "where total_category > 0 and type_total > 0 " + \
+            "order by first_sub.category "
 
-            result = c.execute(query)
-            print_result(result, 'Total Amount Prescribed for each Drug')
-
-        except OperationalError as msg:
-            print msg
-            return -1
-        return 1
+        result = c.execute(query)
+        print_result(result.fetchall(), result, 'Total Amount Prescribed for each Drug')
 
     def act3():
         print "List all medications for diagnosis: "
@@ -85,13 +74,8 @@ def init(conn, c):
                 "group by drug_name " + \
                 "order by diagnosis, drug_frequency "
 
-        try:
-            result = c.execute(query)
-            print_result(result, 'List all medications for diagnosis')
-        except OperationalError as msg:
-            print msg
-            return -1
-        return 1
+        result = c.execute(query)
+        print_result(result.fetchall(), result, 'List all medications for diagnosis')
 
     def act4():
         print 'List all diagnoses for drug: '
@@ -102,18 +86,13 @@ def init(conn, c):
                 "group by diagnosis " + \
                 "order by drug_name, average_amount"
 
-        try:
-           result = c.execute(query)
-        except OperationalError as msg:
-            print msg
-            return -1
-        return 1
+        result = c.execute(query)
+        print_result(result.fetchall(), result, 'All diagnoses: ')
 
         print_result(result, 'List all diagnosis for medication')
 
     def act5():
         print "You chose to add a new user to the database."
-        sid = raw_input("Enter staff_id of new user: ")
         while True:
             nrole = raw_input("Enter role of new user: ").upper()
             if nrole not in ("D", "N", "A"):
@@ -125,52 +104,68 @@ def init(conn, c):
         nlogin = raw_input("Enter the username of new user: ")
         nlogin = hashlib.sha224(nlogin)
         npassword = raw_input("Enter password of new user: ")
-        npassword = hashlib.sha224(npassword).hexdigest()
+        npassword = hashlib.sha224(npassword)
 
-        
+        insertion = (nrole, str(nname), str(nlogin), str(npassword))
 
-        try:
-            c.execute("INSERT INTO staff VALUES (?,?,?,?,?);", (sid, nrole, str(nname), str(nlogin), str(npassword)))
-        except OperationalError as msg:
-            print msg
-            return -1
-
-        return 1
+        c.execute("INSERT INTO staff VALUES ((select max(staff_id) from staff) + 1,?,?,?, ?)", insertion)
+        sid = int(c.execute("select max(staff_id) from staff").fetchall()[0][0])
+        print 'New user created successfully. Your staff_id is: ' + str(sid)
 
     while 1:
-        action = int(raw_input("Action 1: Create report\n"
+        action = raw_input("Action 1: Create report\n"
                                "Action 2: Total amount prescribed for each drug\n"
                                "Action 3: List all medications for diagnosis\n"
                                "Action 4: List all diagnoses for drug\n"
                                "Action 5: Add new user to database\n"
                                "Log out: PRESS 6\n"
-                               "Enter action: "))
+                               "Enter action: ")
+
+        if action not in [1,2,3,4,5,6]:
+            print "Please enter a correct action."
+            continue
+
+        action = int(action)
 
         while action == 1:
-            result = act1()
-            if result: break
+            try:
+                act1()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 2:
-            result = act2()
-            if result: break
+            try:
+                act2()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 3:
-            result = act3()
-            if result: break
+            try:
+                act3()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 4:
-            result = act4()
-            if result: break
+            try:
+                act4()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 5:
-            result = act5()
-            if result: break
+            try:
+                act5()
+                break
+            except Exception as msg:
+                print msg
 
         if action == 6:
             break
 
-        if action not in [1,2,3,4,5,6]:
-            print "Please enter a correct action."
+
 
     conn.commit()
 

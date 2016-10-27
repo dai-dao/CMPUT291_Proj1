@@ -20,11 +20,7 @@ def executeScript(script, c):
         except OperationalError, msg:
             print "Command skipped: ", msg
 
-
-def print_result(result, table):
-    # Get all rows.
-    rows = result.fetchall();
-
+def print_result(rows, result, table):
     # \n represents an end-of-line
     print "\n--- TABLE ", table, "\n"
 
