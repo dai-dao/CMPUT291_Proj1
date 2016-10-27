@@ -1,14 +1,10 @@
 from db_utility import *
+import hashlib
 
 def init(conn, c):
 
-    action = int(raw_input("Action 1: Create report\n"
-                       "Action 2: Total amount prescribed for each drug\n"
-                       "Action 3: List all medications for diagnosis\n"
-                       "Action 4: List all diagnoses for drug\n"
-                       "Enter action: "))
-
-    if action == 1:
+    def act1():
+        print "Creating report: "
         sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
         edate = raw_input("Enter End Date (YYYY-MM-DD HH:MM:SS): ")
 
@@ -19,15 +15,20 @@ def init(conn, c):
                 "FROM medications " + \
                 "GROUP BY staff_id, drug_name"
 
-        result = c.execute(query)
-        print_result(result, 'Report')
+        try:
+            result = c.execute(query)
+            print_result(result, 'Report')
+        except OperationalError as msg:
+            print msg
+            return -1
+        return 1
 
-    if action == 2:
+    def act2():
+        print "Get Total amount prescribed for each drug"
         sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
         edate = raw_input("Enter End Date (YYYY-MM-DD HH:MM:SS): ")
-
-        # Needs some more checking, there are negative values involved
-        query = "select first_sub.category, second_sub.drug_name, second_sub.total_category, first_sub.type_total " + \
+        try:
+            query = "select first_sub.category, second_sub.drug_name, second_sub.total_category, first_sub.type_total " + \
                 "from " + \
                 "    (select dr.category, sum(sub.Total) as type_total " + \
                 "    from drugs dr " + \
@@ -66,10 +67,16 @@ def init(conn, c):
                 "where total_category > 0 and type_total > 0 " + \
                 "order by first_sub.category "
 
-        result = c.execute(query)
-        print_result(result, 'Total Amount Prescribed for each Drug')
+            result = c.execute(query)
+            print_result(result, 'Total Amount Prescribed for each Drug')
 
-    if action == 3:
+        except OperationalError as msg:
+            print msg
+            return -1
+        return 1
+
+    def act3():
+        print "List all medications for diagnosis: "
         diagnosis = raw_input("Enter the diagnosis: ")
         query = "select diag.diagnosis, med.drug_name, count(med.drug_name) as drug_frequency " + \
                 "from " + \
@@ -78,19 +85,92 @@ def init(conn, c):
                 "group by drug_name " + \
                 "order by diagnosis, drug_frequency "
 
-        result = c.execute(query)
-        print_result(result, 'List all medications for diagnosis')
+        try:
+            result = c.execute(query)
+            print_result(result, 'List all medications for diagnosis')
+        except OperationalError as msg:
+            print msg
+            return -1
+        return 1
 
-    if action == 4:
+    def act4():
+        print 'List all diagnoses for drug: '
         drug = raw_input("Enter the Drug Name: " )
         query = "select med.drug_name, diag.diagnosis, avg(med.amount) as average_amount " + \
                 "from medications med, diagnoses diag where med.chart_id = diag.chart_id " + \
                 "and med.drug_name = %s" % drug + \
                 "group by diagnosis " + \
                 "order by drug_name, average_amount"
-        result = c.execute(query)
+
+        try:
+           result = c.execute(query)
+        except OperationalError as msg:
+            print msg
+            return -1
+        return 1
+
         print_result(result, 'List all diagnosis for medication')
 
+    def act5():
+        print "You chose to add a new user to the database."
+        sid = raw_input("Enter staff_id of new user")
+        while True:
+            nrole = raw_input("Enter role of new user").upper()
+            if nrole not in ("D", "N", "A"):
+                print "Role must be D, N, or A. Try again"
+                continue
+            break
 
+        nname = raw_input("Enter name of new user")
+        nlogin = raw_input("Enter the username of new user")
+        nlogin = hashlib.sha224(nlogin)
+        npassword = raw_input("Enter password of new user")
+        npassword = hashlib.sha224(npassword)
 
+        insertion = (sid, nrole, nname, nlogin, npassword)
+
+        try:
+            c.execute("INSERT INTO staff VALUES (?,?,?,?, ?)", insertion)
+        except OperationalError as msg:
+            print msg
+            return -1
+
+        return 1
+
+    while 1:
+        action = int(raw_input("Action 1: Create report\n"
+                               "Action 2: Total amount prescribed for each drug\n"
+                               "Action 3: List all medications for diagnosis\n"
+                               "Action 4: List all diagnoses for drug\n"
+                               "Action 5: Add new user to database\n"
+                               "Log out: PRESS 6\n"
+                               "Enter action: "))
+
+        while action == 1:
+            result = act1()
+            if result: break
+
+        while action == 2:
+            result = act2()
+            if result: break
+
+        while action == 3:
+            result = act3()
+            if result: break
+
+        while action == 4:
+            result = act4()
+            if result: break
+
+        while action == 5:
+            result = act5()
+            if result: break
+
+        if action == 6:
+            break
+
+        if action not in [1,2,3,4,5,6]:
+            print "Please enter a correct action."
+
+    conn.commit()
 
