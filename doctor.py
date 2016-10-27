@@ -10,48 +10,46 @@ def init(staff_id, conn, c):
         print "Available patients"
         # 1. Display all available patients
         result = c.execute("SELECT * FROM %s;" % 'patients')
-        print_result(result.fetchall(), result, 'patients')
+        rows = result.fetchall()
+        print_result(rows, result, 'patients')
+
+        patient_hcnos = list()
+        for row in rows:
+            patient_hcnos.append(int(row[0]))
 
         # 2. Choose a patient and display all charts based on adate
+        while 1:
+            patient_hcno = int(raw_input("Enter patient hcno: "))
+            if patient_hcno not in patient_hcnos:
+                print 'This patient is not in database. Please try again!'
+            else:
+                break
+
         # Action 1: List all Charts
-        patient_hcno = int(raw_input("Enter patient hcno: "))
         result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
-
         rows = result.fetchall()
-
-        print "Length is: " + str(len(rows))
-
-        if len(rows) == 0:
-            print 'There\'s  no patients with this hcno. Try again!'
-            return -1, None, None, None
-
         print_result(rows, result, 'charts')
 
+        chart_ids = list()
+        for row in rows:
+            chart_ids.append(int(row[0]))
+
         # Next: Select a chart
-        chart_id = int(raw_input("Chart ID: "))
+        while 1:
+            chart_id = int(raw_input("Chart ID: "))
+            if chart_id not in chart_ids:
+                print 'This chart is not for this patient. Try again!'
+            else:
+                break
 
         symptoms = c.execute("Select * from symptoms where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
         rows = symptoms.fetchall()
 
-        if len(rows) == 0:
-            print 'There\'s no symptoms for this patient and chart'
-        else:
-            print_result(rows, symptoms, 'symptoms')
-
         diagnoses = c.execute("Select * from diagnoses where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
         rows = diagnoses.fetchall()
 
-        if len(rows) == 0:
-            print 'There\'s no diagnoses for this patient and chart'
-        else:
-            print_result(rows, diagnoses, 'diagnoses')
-
         medications = c.execute("Select * from medications where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
         rows = medications.fetchall()
-        if len(rows) == 0:
-            print 'There\'s no medications for this patient and chart'
-        else:
-            print_result(rows, medications, 'medications')
 
         action = int(raw_input("Action 1: Add symptoms\n" +
                                "Action 2: Add diagnosis\n" +
@@ -83,22 +81,25 @@ def init(staff_id, conn, c):
 
     def act3(patient_hcno, chart_id):
         print "Insert medication: "
-        new_medication = raw_input("What medication? ")
+
+        while 1:
+            new_medication = raw_input("What medication? ")
+
+            drug_sug_amount = c.execute("select sug_amount from dosage where age_group in " +
+                                            "(select age_group from patients where hcno = %d)" % patient_hcno +
+                                        " and drug_name = '%s'" % new_medication)
+
+            rows = drug_sug_amount.fetchall()
+
+            if (len(rows)):
+                sug_amount = rows[0][0]
+                break
+            else:
+                print "Drug is not in database"
+
         new_medication_amount = int(raw_input("What's the amount? "))
         new_sdate = raw_input("Start Date (YYYY-MM-DD HH:MM:SS): ")
         new_edate = raw_input("End Date (YYYY-MM-DD HH:MM:SS): ")
-
-        drug_sug_amount = c.execute("select sug_amount from dosage where age_group in " +
-                                        "(select age_group from patients where hcno = %d)" % patient_hcno +
-                                    " and drug_name = '%s'" % new_medication)
-
-        rows = drug_sug_amount.fetchall()
-
-        if (len(rows)):
-            sug_amount = rows[0][0]
-        else:
-            print "Drug is not in database"
-            return
 
         confirm_add = False
         if sug_amount >= new_medication_amount:
@@ -127,16 +128,11 @@ def init(staff_id, conn, c):
             print "There's no record of allergy to this drug.\n"
 
         if confirm_add:
-            try:
-                c.execute("Insert into medications values " +
-                      "(%d, %d, %d, DateTime('now'), '%s' , '%s', %d, '%s')" % (patient_hcno, chart_id, staff_id, new_sdate, new_edate, new_medication_amount, new_medication))
-                medications = c.execute("Select * from medications where chart_id = %d and hcno = %d" % (chart_id, patient_hcno))
-                print_result(medications.fetchall(), medications, 'medications')
-            except OperationalError as msg:
-                print msg
-                return -1
+            c.execute("Insert into medications values " +
+                  "(%d, %d, %d, DateTime('now'), '%s' , '%s', %d, '%s')" % (patient_hcno, chart_id, staff_id, new_sdate, new_edate, new_medication_amount, new_medication))
+            medications = c.execute("Select * from medications where chart_id = %d and hcno = %d" % (chart_id, patient_hcno))
+            print_result(medications.fetchall(), medications, 'medications')
 
-        return 1
 
     while 1:
         while 1:

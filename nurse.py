@@ -14,17 +14,19 @@ def init(staff_id, conn, c):
                                "Log out: PRESS 4\n"
                                "Enter Action: "))
 
-        # Find all open charts for this patients
-        patient_hcno = int(raw_input("Please enter healthcare number: "))
-        open_charts = c.execute("Select * from charts where hcno= %d and edate is null" % patient_hcno)
         open_charts_id = list()
+        patient_hcno = -1
+        if action != 3:
+            # Find all open charts for this patients
+            patient_hcno = int(raw_input("Please enter healthcare number: "))
+            open_charts = c.execute("Select * from charts where hcno= %d and edate is null" % patient_hcno)
 
-        rows = open_charts.fetchall()
+            rows = open_charts.fetchall()
 
-        if len(rows):
-            print_result(rows, open_charts, "Open Charts: ")
-            for row in rows:
-                open_charts_id.append(int(row[0]))
+            if len(rows):
+                print_result(rows, open_charts, "Open Charts: ")
+                for row in rows:
+                    open_charts_id.append(int(row[0]))
 
         return action, patient_hcno, open_charts_id
 
@@ -76,37 +78,48 @@ def init(staff_id, conn, c):
     def act3():
         print "Display patients and charts"
         # 3. Display all available patients
-        result = c.execute("SELECT * FROM %s;" % 'patients')
-        print_result(result.fetchall(), result, 'patients')
+        result = c.execute("SELECT * FROM patients")
+        rows = result.fetchall()
+        patient_hcnos = list()
+
+        for row in rows:
+            patient_hcnos.append(int(row[0]))
+
+        print_result(rows, result, 'patients')
 
         # 4. Choose a patient and display all charts based on adate
         # Action 1: List all Charts
-        patient_hcno = int(raw_input("Enter patient hcno: "))
+        while 1:
+            patient_hcno = int(raw_input("Enter patient hcno: "))
+            if patient_hcno not in patient_hcnos:
+                print 'Patient doesn\'t exist, please try again!'
+            else:
+                break
+
         result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
-        print_result(result.fetchall(), result, 'charts')
+        rows = result.fetchall()
+        chart_ids = list()
+        for row in rows:
+            chart_ids.append(int(row[0]))
+
+        print_result(rows, result, 'charts')
 
         # Next: Select a chart
-        chart_id = int(raw_input("Chart ID: "))
+        while 1:
+            chart_id = int(raw_input("Chart ID: "))
+            if chart_id not in chart_ids:
+                print 'Chart id doesn\'t exist for this patient, try again'
+            else:
+                break
+
         symptoms = c.execute("Select * from symptoms where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
-        rows = symptoms.fetchall()
-        if len(rows) == 0:
-            print 'There\'s no symptoms for this patient and chart'
-        else:
-            print_result(rows, symptoms, 'symptoms')
+        print_result(symptoms.fetchall(), symptoms, 'symptoms')
 
         diagnoses = c.execute("Select * from diagnoses where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
-        rows = diagnoses.fetchall()
-        if len(rows) == 0:
-            print 'There\'s no diagnoses for this patient and chart'
-        else:
-            print_result(rows, diagnoses, 'diagnoses')
+        print_result(diagnoses.fetchall(), diagnoses, 'diagnoses')
 
         medications = c.execute("Select * from medications where chart_id = %d and hcno=%d" % (chart_id, patient_hcno))
-        rows = medications.fetchall()
-        if len(rows) == 0:
-            print 'There\'s no medications for this patient and chart'
-        else:
-            print_result(rows, medications, 'medications')
+        print_result(medications.fetchall(), medications, 'medications')
 
         new_symptom = raw_input("What symptom? ")
         c.execute("Insert into symptoms values ('%s', %d, %d, DateTime('now'), '%s')" % (patient_hcno, int(chart_id), int(staff_id) , new_symptom))
