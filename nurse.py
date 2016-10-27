@@ -3,6 +3,13 @@ from db_utility import *
 import sqlite3
 
 
+
+
+
+check = c.execute("Select distinct(hcno) from charts;").fetchall()
+            
+            
+
 def init(staff_id, conn, c):
 
     def start():
@@ -16,7 +23,25 @@ def init(staff_id, conn, c):
         patient_hcno = int(raw_input("Please enter healthcare number: "))
         open_charts = c.execute("Select * from charts where hcno= %d and edate is null" % patient_hcno)
         open_charts_id = list()
-
+        
+        ############################################################
+        i = 0
+        check_list = []
+        while i < len(check):
+            check_list.append(int(check[i][0]))
+            i = i+1
+            
+        
+        while (True):
+            if patient_hcno not in check_list:
+                print "User not in patient list or has no chart.\n"
+                patient_hcno = int(raw_input("Enter patient hcno: "))
+                result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
+            else:
+                break
+            
+        result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)        
+        ##############################################################
         if len(open_charts.fetchall()):
             print_result(open_charts, "Open Charts: ")
             for row in open_charts.fetchall():

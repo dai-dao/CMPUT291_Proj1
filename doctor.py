@@ -9,12 +9,34 @@ def init(staff_id, conn, c):
         try:
             result = c.execute("SELECT * FROM %s;" % 'patients')
             print_result(result, 'patients')
-
+            
             # 2. Choose a patient and display all charts based on adate
             # Action 1: List all Charts
             patient_hcno = int(raw_input("Enter patient hcno: "))
             result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
+            
+            check = c.execute("Select distinct(hcno) from charts;").fetchall()
+            
+            i = 0
+            check_list = []
+            while i < len(check):
+                
+                check_list.append(int(check[i][0]))
+                i = i+1
+                
+            
+            while (True):
+                if patient_hcno not in check_list:
+                    print "User not in patient list or has no chart.\n"
+                    patient_hcno = int(raw_input("Enter patient hcno: "))
+                    result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
+                else:
+                    break
+                
+            result = c.execute("Select * from charts where hcno = %d order by adate DESC;" % patient_hcno)
+                     
             print_result(result, 'charts')
+                       
 
             # Next: Select a chart
             chart_id = int(raw_input("Chart ID: "))
@@ -32,7 +54,7 @@ def init(staff_id, conn, c):
         action = raw_input("Action 1: Add symptoms\n" +
                            "Action 2: Add diagnosis\n" +
                            "Action 3: Add medications\n"
-                           "Log out: PRESS 4" +
+                           "Log out: PRESS 4\n" +
                            "Enter Action: ")
 
         return 1, action, patient_hcno, chart_id

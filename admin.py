@@ -113,24 +113,24 @@ def init(conn, c):
 
     def act5():
         print "You chose to add a new user to the database."
-        sid = raw_input("Enter staff_id of new user")
+        sid = raw_input("Enter staff_id of new user: ")
         while True:
-            nrole = raw_input("Enter role of new user").upper()
+            nrole = raw_input("Enter role of new user: ").upper()
             if nrole not in ("D", "N", "A"):
                 print "Role must be D, N, or A. Try again"
                 continue
             break
 
-        nname = raw_input("Enter name of new user")
-        nlogin = raw_input("Enter the username of new user")
+        nname = raw_input("Enter name of new user: ")
+        nlogin = raw_input("Enter the username of new user: ")
         nlogin = hashlib.sha224(nlogin)
-        npassword = raw_input("Enter password of new user")
-        npassword = hashlib.sha224(npassword)
+        npassword = raw_input("Enter password of new user: ")
+        npassword = hashlib.sha224(npassword).hexdigest()
 
-        insertion = (sid, nrole, nname, nlogin, npassword)
+        
 
         try:
-            c.execute("INSERT INTO staff VALUES (?,?,?,?, ?)", insertion)
+            c.execute("INSERT INTO staff VALUES (?,?,?,?,?);", (sid, nrole, str(nname), str(nlogin), str(npassword)))
         except OperationalError as msg:
             print msg
             return -1
