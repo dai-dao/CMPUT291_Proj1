@@ -16,7 +16,7 @@ def init(staff_id, conn, c):
 
         open_charts_id = list()
         patient_hcno = -1
-        if action != 3:
+        if action != 3 and action != 4:
             # Find all open charts for this patients
             print_result(c.execute("Select distinct(hcno) from charts;").fetchall(), c.execute("Select distinct(hcno) from charts;"),"hcno")
             patient_hcno = int(raw_input("Please enter healthcare number: "))
@@ -149,7 +149,7 @@ def init(staff_id, conn, c):
 
         while action == 2:
             try:
-                act2(patient_hcno, open_charts_id)
+                act2(open_charts_id)
                 break
             except Exception as msg:
                 print msg
