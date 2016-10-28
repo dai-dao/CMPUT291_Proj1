@@ -8,7 +8,8 @@ def init(staff_id, conn, c):
     staff_id = int(staff_id)
 
     def start():
-        action = int(raw_input("Action 1: Create new chart\n" \
+        action = int(raw_input("\n" \
+                               "Action 1: Create new chart\n" \
                                "Action 2: Close chart\n"
                                "Action 3: Show patients and charts\n"
                                "Log out: PRESS 4\n"
@@ -52,13 +53,18 @@ def init(staff_id, conn, c):
         if len(open_charts_id) == 0: # This patient doesn't already exist
             print "This patient's information doesn't already exist"
             name = raw_input("Please enter patient name: ")
-            age_group = raw_input("Please enter patient's age group: ")
+            age_group = raw_input("Please enter patient's age group (kid, adult, elder): ")
             address = raw_input("Please enter patient's address: ")
             phone = raw_input("Please enter patient's phone: ")
             emg_phone = raw_input("Please enter patient's emergency phone: ")
             # Insert patient's information
-            query = "insert into patients values(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")" % (patient_hcno, name, age_group, address, phone, emg_phone)
+            query = "insert into patients values('%s', '%s', '%s', '%s', '%s', '%s');" % (str(patient_hcno), name, age_group, address, str(phone), str(emg_phone))
+            c.execute(query)
+
+            query = "select * from patients where hcno=%d" % patient_hcno
             result = c.execute(query)
+
+            print "New information for this patient:"
             print_result(result.fetchall(), result, 'Patient Table')
 
         else:
