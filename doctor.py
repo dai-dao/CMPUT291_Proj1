@@ -7,6 +7,13 @@ def init(staff_id, conn, c):
     staff_id = int(staff_id)
 
     def start():
+        first_action = int(raw_input("\n" \
+                                     "Log Out: PRESS 1" \
+                                     "Action 2: Show Patients and Perform Actions\n"
+                                     "Enter action: "))
+        return first_action
+
+    def start_next():
         print "Available patients"
         # 1. Display all available patients
         result = c.execute("SELECT * FROM %s;" % 'patients')
@@ -54,7 +61,6 @@ def init(staff_id, conn, c):
         action = int(raw_input("Action 1: Add symptoms\n" +
                                "Action 2: Add diagnosis\n" +
                                "Action 3: Add medications\n" +
-                               "Log out: PRESS 4\n" +
                                "Enter Action: "))
 
         return action, patient_hcno, chart_id
@@ -137,37 +143,44 @@ def init(staff_id, conn, c):
     while 1:
         while 1:
             try:
-                action, patient_hcno, chart_id = start()
+                first_action = start()
                 break
             except Exception as msg:
                 print msg
 
-        if action not in [1,2,3,4]:
+        if first_action not in [1, 2]:
             print "Please enter a correct action."
             continue
 
-        while action == 1:
-            try:
-                act1(patient_hcno, chart_id)
-                break
-            except Exception as msg:
-                print msg
-
-        while action == 2:
-            try:
-                act2(patient_hcno, chart_id)
-                break
-            except Exception as msg:
-                print msg
-
-        while action == 3:
-            try:
-                act3(patient_hcno, chart_id)
-                break
-            except Exception as msg:
-                print msg
-
-        if action == 4:
+        if first_action == 1:
             break
+
+        if first_action == 2:
+            action, patient_hcno, chart_id = start_next()
+
+            if action not in [1,2,3]:
+                print "Please enter a correct action."
+                continue
+
+            while action == 1:
+                try:
+                    act1(patient_hcno, chart_id)
+                    break
+                except Exception as msg:
+                    print msg
+
+            while action == 2:
+                try:
+                    act2(patient_hcno, chart_id)
+                    break
+                except Exception as msg:
+                    print msg
+
+            while action == 3:
+                try:
+                    act3(patient_hcno, chart_id)
+                    break
+                except Exception as msg:
+                    print msg
 
     conn.commit()
