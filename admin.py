@@ -139,11 +139,12 @@ def init(conn, c):
                            "Log out: PRESS 6\n"
                            "Enter action: ")
 
+        action = int(action)
+
         if action not in [1, 2, 3, 4, 5, 6]:
             print "Please enter a correct action."
             continue
 
-        action = int(action)
 
         while action == 1:
             try:
