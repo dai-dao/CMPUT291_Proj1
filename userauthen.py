@@ -82,7 +82,7 @@ while True:
         c.execute("SELECT role, staff_id FROM staff WHERE login=? AND password=?;", (username, password))
         
         user_exists = c.fetchone()
-        if user_exists:
+        while user_exists:
             if user_exists[0] == 'A':
                 print '\nHello Administrator\n'
                 adminUser(conn, c)

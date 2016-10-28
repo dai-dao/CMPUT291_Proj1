@@ -82,14 +82,12 @@ def init(conn, c):
         drug = raw_input("Enter the Drug Name: " )
         query = "select med.drug_name, diag.diagnosis, avg(med.amount) as average_amount " + \
                 "from medications med, diagnoses diag where med.chart_id = diag.chart_id " + \
-                "and med.drug_name = %s" % drug + \
+                "and med.drug_name = '%s' " % drug + \
                 "group by diagnosis " + \
                 "order by drug_name, average_amount"
 
         result = c.execute(query)
         print_result(result.fetchall(), result, 'All diagnoses: ')
-
-        print_result(result, 'List all diagnosis for medication')
 
     def act5():
         print "You chose to add a new user to the database."
@@ -121,11 +119,12 @@ def init(conn, c):
                                "Log out: PRESS 6\n"
                                "Enter action: ")
 
+        action = int(action)
+
         if action not in [1,2,3,4,5,6]:
             print "Please enter a correct action."
             continue
 
-        action = int(action)
 
         while action == 1:
             try:
