@@ -18,6 +18,7 @@ def init(staff_id, conn, c):
         patient_hcno = -1
         if action != 3:
             # Find all open charts for this patients
+            print_result(c.execute("Select distinct(hcno) from charts;").fetchall(), c.execute("Select distinct(hcno) from charts;"),"hcno")
             patient_hcno = int(raw_input("Please enter healthcare number: "))
             open_charts = c.execute("Select * from charts where hcno= %d and edate is null" % patient_hcno)
 
