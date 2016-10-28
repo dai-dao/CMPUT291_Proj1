@@ -98,7 +98,7 @@ def init(conn, c):
         drug = raw_input("Enter the Drug Name: " )
         query = "select med.drug_name, diag.diagnosis, avg(med.amount) as average_amount " + \
                 "from medications med, diagnoses diag where med.chart_id = diag.chart_id " + \
-                "and med.drug_name = %s" % drug + \
+                "and med.drug_name = '%s' " % drug + \
                 "group by diagnosis " + \
                 "order by drug_name, average_amount"
 
@@ -108,8 +108,6 @@ def init(conn, c):
             print msg
             return -1
         return 1
-
-        print_result(result, 'List all diagnosis for medication')
 
     def act5():
         while True:
@@ -173,7 +171,18 @@ def init(conn, c):
                                "Action 4: List all diagnoses for drug\n"
                                "Action 5: Add new user to database\n"
                                "Log out: PRESS 6\n"
+<<<<<<< HEAD
                                "Enter action: "))
+=======
+                               "Enter action: ")
+
+        action = int(action)
+
+        if action not in [1,2,3,4,5,6]:
+            print "Please enter a correct action."
+            continue
+
+>>>>>>> origin/master
 
         while action == 1:
             result = act1()
