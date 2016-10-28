@@ -57,7 +57,7 @@ def init(staff_id, conn, c):
             phone = raw_input("Please enter patient's phone: ")
             emg_phone = raw_input("Please enter patient's emergency phone: ")
             # Insert patient's information
-            query = "insert into patients values(%s, %d, %d, %d, %d, %d)" % (patient_hcno, name, age_group, address, phone, emg_phone)
+            query = "insert into patients values(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")" % (patient_hcno, name, age_group, address, phone, emg_phone)
             result = c.execute(query)
             print_result(result.fetchall(), result, 'Patient Table')
 
@@ -73,7 +73,7 @@ def init(staff_id, conn, c):
         print "Close charts"
         # Close open charts
         for cid in open_charts_id:
-            c.execute("update charts set edate=DateTime('now') where chart_id=%d", cid)
+            c.execute("update charts set edate=DateTime('now') where chart_id=%d" % cid)
         print 'Open charts closed for this patient'
 
     def act3():
