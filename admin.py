@@ -110,104 +110,77 @@ def init(conn, c):
         return 1
 
     def act5():
+        print "You chose to add a new user to the database."
         while True:
-            print "You chose to add a new user to the database."
-            sid = raw_input("Enter staff_id of new user: ")
-            while True:
-                nrole = raw_input("Enter role of new user: ").upper()
-                if nrole not in ("D", "N", "A"):
-                    print "Role must be D, N, or A. Try again"
-                    continue
-                break
-
-            while True:
-
-                nname = raw_input("Enter name of new user: ")
-
-                nlogin = raw_input("Enter the username of new user: ")
-                h = hashlib.sha224()
-                h.update(nlogin)
-                nlogin = h.hexdigest()
-                nlogin = str(nlogin)
-
-                query = "SELECT s.login FROM staff s"
-                c.execute(query)
-                rows = c.fetchall()
-
-                flag = True
-                for each in rows:
-                    if each[0] == nlogin:
-                        flag = False
-
-                if flag == False:
-                    print "Username already exists in table. Enter another one."
-                    continue
-
-                break
-
-            npassword = raw_input("Enter password of new user: ")
-            h2 = hashlib.sha224()
-            h2.update(npassword)
-            npassword = h2.hexdigest()
-            npassword = str(npassword)
-
-            insertion = (sid, nrole, nname, nlogin, npassword)
-
-
-            try:
-                c.execute("INSERT INTO staff VALUES (?,?,?,?,?)", insertion)
-            except sqlite3.IntegrityError:
-                print "Staff ID already exists in table. Try again"
+            nrole = raw_input("Enter role of new user: ").upper()
+            if nrole not in ("D", "N", "A"):
+                print "Role must be D, N, or A. Try again"
                 continue
-
             break
 
-        return 1
+        nname = raw_input("Enter name of new user: ")
+        nlogin = raw_input("Enter the username of new user: ")
+        nlogin = hashlib.sha224(nlogin)
+        npassword = raw_input("Enter password of new user: ")
+        npassword = hashlib.sha224(npassword)
+
+        insertion = (nrole, str(nname), str(nlogin), str(npassword))
+
+        c.execute("INSERT INTO staff VALUES ((select max(staff_id) from staff) + 1,?,?,?, ?)", insertion)
+        sid = int(c.execute("select max(staff_id) from staff").fetchall()[0][0])
+        print 'New user created successfully. Your staff_id is: ' + str(sid)
 
     while 1:
-        action = int(raw_input("\nAction 1: Create report\n"
-                               "Action 2: Total amount prescribed for each drug\n"
-                               "Action 3: List all medications for diagnosis\n"
-                               "Action 4: List all diagnoses for drug\n"
-                               "Action 5: Add new user to database\n"
-                               "Log out: PRESS 6\n"
-<<<<<<< HEAD
-                               "Enter action: "))
-=======
-                               "Enter action: ")
+        action = raw_input("Action 1: Create report\n"
+                           "Action 2: Total amount prescribed for each drug\n"
+                           "Action 3: List all medications for diagnosis\n"
+                           "Action 4: List all diagnoses for drug\n"
+                           "Action 5: Add new user to database\n"
+                           "Log out: PRESS 6\n"
+                           "Enter action: ")
 
-        action = int(action)
-
-        if action not in [1,2,3,4,5,6]:
+        if action not in [1, 2, 3, 4, 5, 6]:
             print "Please enter a correct action."
             continue
 
->>>>>>> origin/master
+        action = int(action)
 
         while action == 1:
-            result = act1()
-            if result: break
+            try:
+                act1()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 2:
-            result = act2()
-            if result: break
+            try:
+                act2()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 3:
-            result = act3()
-            if result: break
+            try:
+                act3()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 4:
-            result = act4()
-            if result: break
+            try:
+                act4()
+                break
+            except Exception as msg:
+                print msg
 
         while action == 5:
-            result = act5()
-            if result: break
+            try:
+                act5()
+                break
+            except Exception as msg:
+                print msg
 
         if action == 6:
             break
-
-        if action not in [1,2,3,4,5,6]:
-            print "Please enter a correct action."
 
     conn.commit()
