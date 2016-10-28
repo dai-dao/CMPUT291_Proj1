@@ -38,12 +38,9 @@ executeScript('table.sql', c)
 executeScript('a3_data.sql', c)
 
 
-#printing of the welcome screen for the database user 
-print "============================================================\n"
-print "************* Welcome to the Hospital database *************\n".upper()
-print "Please enter your username and password below to start"
-print "or type 'exit' in both fields to exit.\n"
 
+
+user_log = 0
 #CURRENT USERNAMES & PASSWORDS:
 # Doctor: adoc, coda
 #         bdoc, codb
@@ -60,10 +57,18 @@ print "or type 'exit' in both fields to exit.\n"
 #loops if user enters username or password that is not in the database
 #exits if user enters 'exit' in both fields
 while True:
+    if user_log == 1:
+        print "\n"
+    #printing of the welcome screen for the database user 
+    print "============================================================\n"
+    print "************* Welcome to the Hospital database *************\n".upper()
+    print "Please enter your username and password below to start"
+    print "or type 'exit' in both fields to exit.\n"   
+    print "============================================================\n"
     
     username_input = raw_input("username: ")
     password_input = raw_input("password: ")
-    
+    user_log = 1
     
 
 #hashing of the entered user inputs so that they may be compared against the database
@@ -82,7 +87,7 @@ while True:
         c.execute("SELECT role, staff_id FROM staff WHERE login=? AND password=?;", (username, password))
         
         user_exists = c.fetchone()
-        if user_exists:
+        while user_exists:
             if user_exists[0] == 'A':
                 print '\nHello Administrator\n'
                 adminUser(conn, c)
