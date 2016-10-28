@@ -8,10 +8,7 @@ def init(conn, c):
         print "Creating report: "
         sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
         edate = raw_input("Enter End Date (YYYY-MM-DD HH:MM:SS): ")
-        while not valid_date(sdate) or not valid_date(edate):
-            print "\nEnter the valid date format.\n"
-            sdate = raw_input("Enter Start Date (YYYY-MM-DD HH:MM:SS): ")
-            edate = raw_input("Enter End Date (YYYY-MM-DD HH:MM:SS): ")            
+        
             
         query = "select staff_id, drug_name, sum(amount) * days_between from " \
                 "( " \
